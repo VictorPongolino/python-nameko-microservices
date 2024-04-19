@@ -23,7 +23,8 @@ class GatewayService(object):
 
 
     @http(
-        "DELETE", "/products/<string:product_id>"
+        "DELETE", "/products/<string:product_id>",
+        expected_exceptions=ProductNotFound
     )
     def delete_product(self, request, product_id):
         """Delete product with given `product_id`
