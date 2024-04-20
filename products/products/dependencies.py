@@ -25,7 +25,7 @@ class StorageWrapper:
         self.client = client
 
     def _format_key(self, product_id):
-        return 'products:{}'.format(product_id)
+        return f'products:{product_id}'
 
     def _from_hash(self, document):
         return {
@@ -39,14 +39,15 @@ class StorageWrapper:
     def get(self, product_id):
         product = self.client.hgetall(self._format_key(product_id))
         if not product:
-            raise NotFound('Product ID {} does not exist'.format(product_id))
-        else:
-            return self._from_hash(product)
+            raise NotFound(f'Product ID {product_id} does not exist')
+        return self._from_hash(product)
 
     def list(self):
-        keys = self.client.keys(self._format_key('*'))
-        for key in keys:
-            yield self._from_hash(self.client.hgetall(key))
+        cursor = '0'
+        while cursor != 0:
+            cursor, keys = self.client.scan(cursor=cursor, match=self._format_key('*'), count=10)
+            for key in keys:
+                yield self._from_hash(self.client.hgetall(key))
 
     def create(self, product):
         self.client.hmset(
@@ -54,11 +55,9 @@ class StorageWrapper:
             product)
 
     def delete(self, product_id):
-        print(f"Deleting product {product_id}")
         result = self.client.delete(self._format_key(product_id))
-        print(f"Operation result: {result}")
         if result == 0:
-            raise NotFound('Product ID {} does not exist'.format(product_id))
+            raise NotFound(f'Product ID {product_id} does not exist')
 
     def decrement_stock(self, product_id, amount):
         return self.client.hincrby(
