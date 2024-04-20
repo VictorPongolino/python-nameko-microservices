@@ -27,17 +27,18 @@ DeclarativeBase = declarative_base(cls=Base)
 class Order(DeclarativeBase):
     __tablename__ = "orders"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
 
 
 class OrderDetail(DeclarativeBase):
     __tablename__ = "order_details"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     order_id = Column(
         Integer,
         ForeignKey("orders.id", name="fk_order_details_orders"),
-        nullable=False
+        nullable=False,
+        index=True
     )
     order = relationship(Order, backref="order_details")
     product_id = Column(Integer, nullable=False)

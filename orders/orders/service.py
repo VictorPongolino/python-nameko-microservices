@@ -18,7 +18,7 @@ class OrdersService:
         order = self.db.query(Order).get(order_id)
 
         if not order:
-            raise NotFound('Order with id {} not found'.format(order_id))
+            raise NotFound(f'Order with id {order_id} not found')
 
         return OrderSchema().dump(order).data
 
