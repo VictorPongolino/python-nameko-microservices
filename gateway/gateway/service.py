@@ -121,9 +121,12 @@ class GatewayService(object):
         return order
 
 
-    @http("GET", "/orders")
+    @http("GET", "/orders", expected_exceptions=ValueError)
     def get_orders(self, request):
-        response = self.orders_rpc.list_orders()
+        page = max(1, request.args.get('page', default=1))
+        limit = min(10, request.args.get('limit', default=10))
+
+        response = self.orders_rpc.list_orders(page, limit)
         return Response(GetOrderSchema(many=True).dumps(response).data,
                         mimetype='application/json')
 
