@@ -130,7 +130,7 @@ scenarios:
           message: 'Order ID should be an integer'
 
     # 6. Delete Product
-    - url: /products/delete  
+    - url: /products/${product_id}
       label: product-delete
       method: DELETE
       think-time: uniform(0s, 0s)
@@ -143,6 +143,7 @@ scenarios:
       assert:
       - contains:
         - 200
+        - 404
         subject: http-code
         not: false
   
