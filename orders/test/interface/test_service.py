@@ -17,16 +17,13 @@ def order(db_session):
 
 @pytest.fixture
 def order_details(db_session, order):
-    db_session.add_all([
-        OrderDetail(
-            order=order, product_id="the_odyssey", price=99.51, quantity=1
-        ),
-        OrderDetail(
-            order=order, product_id="the_enigma", price=30.99, quantity=8
-        )
-    ])
+    details = [
+        OrderDetail(order=order, product_id="the_odyssey", price=99.51, quantity=1),
+        OrderDetail(order=order, product_id="the_enigma", price=30.99, quantity=8)
+    ]
+    db_session.add_all(details)
     db_session.commit()
-    return order_details
+    return details
 
 
 def test_get_order(orders_rpc, order):
@@ -35,15 +32,15 @@ def test_get_order(orders_rpc, order):
 
 
 @pytest.mark.usefixtures('db_session')
-def test_get_orders(orders_rpc, order_details):
+def test_get_orders(orders_rpc, order, order_details):
     page = 0
     limit = 10
 
     expected_response = [{
-        'id': 1,
+        'id': order.id,
         'order_details': [
-            {'price': '99.51', 'product_id': 'the_odyssey', 'quantity': 1, 'id': 1},
-            {'price': '30.99', 'product_id': 'the_enigma', 'quantity': 8, 'id': 2}
+            {'price': '99.51', 'product_id': 'the_odyssey', 'quantity': 1, 'id': order_details[0].id},
+            {'price': '30.99', 'product_id': 'the_enigma', 'quantity': 8, 'id': order_details[1].id}
         ]
     }]
 
