@@ -34,6 +34,17 @@ def test_list(storage, products):
         products == sorted(list(listed_products), key=lambda x: x['id']))
 
 
+def test_delete_product(storage, products):
+    exclusion_response = storage.delete('LZ129')
+    assert exclusion_response is True
+
+def test_delete_product_fails_not_found(storage, products):
+    product_id = 'product_id_not_exists'
+    with pytest.raises(storage.NotFound) as exc:
+        storage.get(product_id)
+    assert f'Product ID {product_id} does not exist' == exc.value.args[0]
+
+
 def test_create(product, redis_client, storage):
 
     storage.create(product)
