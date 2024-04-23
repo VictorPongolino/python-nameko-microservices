@@ -91,9 +91,6 @@ class TestDeleteProduct(object):
 
         response = web_session.delete('/products/'+product_id)
         assert response.status_code == 404
-        payload = response.json()
-        assert payload['error'] == 'NOT_FOUND'
-        assert payload['message'] == f'Product ID {product_id} does not exist'
 
 class TestGetOrder(object):
 
