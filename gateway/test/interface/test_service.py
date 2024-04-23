@@ -197,6 +197,28 @@ class TestGetOrder(object):
         assert payload['error'] == 'ORDER_NOT_FOUND'
         assert payload['message'] == 'missing'
 
+    def test_get_orders(self, gateway_service, web_session):
+        gateway_service.orders_rpc.list_orders.return_value = [
+            {
+                "id": 1,
+                "order_details": [
+                    {
+                        "quantity": 1,
+                        "id": 1,
+                        "price": "100000.99",
+                        "product_id": "the_odyssey"
+                    }
+                ]
+            }
+        ]
+
+        response = web_session.get('/orders')
+
+        assert response.status_code == 200
+        expected_response = [{'id': 1, 'order_details': [{'id': 1, 'price': '100000.99', 'quantity': 1, 'product_id': 'the_odyssey'}]}]
+        assert expected_response == response.json()
+
+
 
 class TestCreateOrder(object):
 
