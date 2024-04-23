@@ -31,7 +31,6 @@ def test_get_order(orders_rpc, order):
     assert response['id'] == order.id
 
 
-@pytest.mark.usefixtures('db_session')
 def test_get_orders(orders_rpc, order, order_details):
     page = 0
     limit = 10
