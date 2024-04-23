@@ -33,6 +33,7 @@ class ProductsService:
     @rpc
     def delete(self, product_id):
         self.storage.delete(product_id)
+        return product_id
 
 
     @event_handler('orders', 'order_created')
