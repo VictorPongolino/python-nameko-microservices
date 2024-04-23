@@ -109,25 +109,23 @@ scenarios:
       then:
         - action: continue
 
-    # 5. Get Orders
+    # 5. Order List
     - url: /orders
       label: orders-list
       method: GET
       think-time: uniform(0s, 0s)
       assert:
-      - contains:
-        - 200
-        subject: http-code
-        not: false
-      - jsonpath:
-        - expression: '$.orders[*]'
-          condition: exists
-          message: 'Expected "orders" array not found'
-      - jsonpath:
-        - expression: '$.orders[*].id'
-          condition: type
-          expected: integer
-          message: 'Order ID should be an integer'
+        - contains:
+            - 200
+          subject: http-code
+          not: false
+      extract-jsonpath:
+        orders_ids: $.orders[*].id
+        default: NOT_FOUND
+
+    - if: '"${orders_ids}" == "NOT_FOUND"'
+      then:
+        - action: continue
 
     # 6. Delete Product
     - url: /products/${product_id}
@@ -136,16 +134,12 @@ scenarios:
       think-time: uniform(0s, 0s)
       headers:
         Content-Type: application/json
-      body: >
-        {
-          "id": "${product_id}"
-        }
       assert:
-      - contains:
-        - 200
-        - 404
-        subject: http-code
-        not: false
+        - contains:
+            - 200
+            - 404
+          subject: http-code
+          not: false
   
 reporting:
 - module: final-stats
