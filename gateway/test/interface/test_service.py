@@ -1,6 +1,7 @@
 import json
 
 from mock import call
+from nameko.exceptions import RemoteError
 
 from gateway.exceptions import OrderNotFound, ProductNotFound
 
@@ -83,14 +84,22 @@ class TestCreateProduct(object):
 
 class TestDeleteProduct(object):
     def test_can_delete_product(self, gateway_service, web_session):
+        gateway_service.products_rpc.delete.return_value = 'the_odyssey'
         response = web_session.delete('/products/the_odyssey')
-        assert response.status_code == 204
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload == {'id': 'the_odyssey'}
+
+
 
     def test_can_delete_product_fails_not_found(self, gateway_service, web_session):
         product_id = 'invalid_product_id'
 
+        gateway_service.products_rpc.delete.side_effect = (ProductNotFound('Product not found'))
+
         response = web_session.delete('/products/'+product_id)
         assert response.status_code == 404
+
 
 class TestGetOrder(object):
 
