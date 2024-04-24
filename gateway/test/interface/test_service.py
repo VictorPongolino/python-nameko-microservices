@@ -231,14 +231,7 @@ class TestCreateOrder(object):
                 'maximum_speed': 3,
                 'in_stock': 899,
                 'passenger_capacity': 100
-            },
-            {
-                'id': 'the_enigma',
-                'title': 'The Enigma',
-                'maximum_speed': 200,
-                'in_stock': 1,
-                'passenger_capacity': 4
-            },
+            }
         ]
 
         # setup mock create response
@@ -308,14 +301,7 @@ class TestCreateOrder(object):
                 'maximum_speed': 3,
                 'in_stock': 899,
                 'passenger_capacity': 100
-            },
-            {
-                'id': 'the_enigma',
-                'title': 'The Enigma',
-                'maximum_speed': 200,
-                'in_stock': 1,
-                'passenger_capacity': 4
-            },
+            }
         ]
 
         # call the gateway service to create the order

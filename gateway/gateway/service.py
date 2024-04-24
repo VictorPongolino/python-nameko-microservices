@@ -179,20 +179,15 @@ class GatewayService(object):
 
     def _create_order(self, order_data):
         # Set to prevent duplicated ids and recode redis overwhelming
-        unique_product_ids = {item['product_id'] for item in order_data['order_details']}
-        order_details = self.products_rpc.get_products_by_id(list(unique_product_ids))
+        unique_product_ids = [item['product_id'] for item in order_data['order_details']]
+        order_details = self.products_rpc.get_products_by_id(unique_product_ids)
 
         if len(order_details) != len(unique_product_ids):
-            first_product_missing = None
-            for order_detail in order_details:
-                order_detail_id = order_detail['product_id']
-                if order_detail_id not in unique_product_ids:
-                    first_product_missing = order_detail_id
-                    break
+            missing_products_id = [item['product_id'] for item in order_details]
 
-            raise ProductNotFound(
-                f"Product Id {first_product_missing['product_id']}"
-            )
+            for unique_product_id in unique_product_ids:
+                if unique_product_id not in missing_products_id:
+                    raise ProductNotFound(f"Product Id {unique_product_id}")
 
         # Call orders-service to create the order.
         # Dump the data through the schema to ensure the values are serialized

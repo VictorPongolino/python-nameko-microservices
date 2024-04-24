@@ -76,9 +76,6 @@ class StorageWrapper:
             if result:
                 products.append(self._from_hash(result))
 
-        if not products:
-            raise NotFound("No products found for the given IDs.")
-
         return products
 
     def delete(self, product_id):
