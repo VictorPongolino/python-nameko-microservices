@@ -224,9 +224,9 @@ class TestCreateOrder(object):
 
     def test_can_create_order(self, gateway_service, web_session):
         # setup mock products-service response:
-        gateway_service.products_rpc.list.return_value = [
+        gateway_service.products_rpc.get_products_by_id.return_value = [
             {
-                'id': 'the_odyssey',
+                'product_id': 'the_odyssey',
                 'title': 'The Odyssey',
                 'maximum_speed': 3,
                 'in_stock': 899,
@@ -255,7 +255,9 @@ class TestCreateOrder(object):
         )
         assert response.status_code == 200
         assert response.json() == {'id': 11}
-        assert gateway_service.products_rpc.list.call_args_list == [call()]
+        assert gateway_service.products_rpc.get_products_by_id.call_args_list == [
+            call(['the_odyssey'])
+        ]
         assert gateway_service.orders_rpc.create_order.call_args_list == [
             call([
                 {'product_id': 'the_odyssey', 'quantity': 3, 'price': '41.00'}
