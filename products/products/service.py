@@ -35,6 +35,10 @@ class ProductsService:
         self.storage.delete(product_id)
         return product_id
 
+    @rpc
+    def get_products_by_id(self, product_ids):
+        return self.storage.find_products_by_id(product_ids)
+
 
     @event_handler('orders', 'order_created')
     def handle_order_created(self, payload):

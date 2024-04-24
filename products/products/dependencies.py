@@ -54,7 +54,7 @@ class StorageWrapper:
             self._format_key(product['id']),
             product)
 
-    def find_order_details_by_id(self, orders_id):
+    def find_products_by_id(self, orders_id):
         """
             Retrieves product details for a set of product IDs.
 

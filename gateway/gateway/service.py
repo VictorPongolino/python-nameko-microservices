@@ -179,14 +179,14 @@ class GatewayService(object):
 
     def _create_order(self, order_data):
         # Set to prevent duplicated ids and recode redis overwhelming
-        unique_order_details_id = {item['product_id'] for item in order_data['order_details']}
-        order_details = self.products_rpc.find_order_details_by_id(unique_order_details_id)
+        unique_product_ids = {item['product_id'] for item in order_data['order_details']}
+        order_details = self.products_rpc.get_products_by_id(list(unique_product_ids))
 
-        if len(order_details) != len(unique_order_details_id):
+        if len(order_details) != len(unique_product_ids):
             first_product_missing = None
             for order_detail in order_details:
                 order_detail_id = order_detail['product_id']
-                if order_detail_id not in unique_order_details_id:
+                if order_detail_id not in unique_product_ids:
                     first_product_missing = order_detail_id
                     break
 
