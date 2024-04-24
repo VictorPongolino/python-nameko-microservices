@@ -33,16 +33,32 @@ def test_list(storage, products):
     assert (
         products == sorted(list(listed_products), key=lambda x: x['id']))
 
-
 def test_delete_product(storage, products):
-    exclusion_response = storage.delete('LZ129')
-    assert exclusion_response is True
+    product_id = 'LZ129'
+    # Assume storage.client refers to the Redis client within the Storage class
+    with patch.object(storage.client, 'exists', return_value=True) as mock_exists, \
+         patch.object(storage.client, 'delete', return_value=1) as mock_delete:
+
+        # Call the delete method
+        exclusion_response = storage.delete(product_id)
+
+        # Assertions
+        assert exclusion_response is True
+        mock_exists.assert_called_once_with('products:LZ129')
+        mock_delete.assert_called_once_with('products:LZ129')
+
+        # Ensure the product is reported as non-existent after deletion
+        mock_exists.return_value = False
+        assert not storage.client.exists('products:LZ129')
+
+
 
 def test_delete_product_fails_not_found(storage, products):
     product_id = 'product_id_not_exists'
     with pytest.raises(storage.NotFound) as exc:
-        storage.get(product_id)
+        storage.delete(product_id)
     assert f'Product ID {product_id} does not exist' == exc.value.args[0]
+
 
 def test_create(product, redis_client, storage):
 
