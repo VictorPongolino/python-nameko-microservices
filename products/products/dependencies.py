@@ -54,6 +54,33 @@ class StorageWrapper:
             self._format_key(product['id']),
             product)
 
+    def find_order_details_by_id(self, orders_id):
+        """
+            Retrieves product details for a set of product IDs.
+
+            Parameters:
+            - orders_id: A list of order details IDs.
+
+            Returns:
+            - list: A list of dictionaries containing product details.
+        """
+        pipeline = self.client.pipeline()
+        keys = [self._format_key(order_id) for order_id in orders_id]
+        for key in keys:
+            pipeline.hgetall(key)
+        results = pipeline.execute()
+
+        # Filter out non-existing products and convert hash maps to dictionaries
+        products = []
+        for result in results:
+            if result:
+                products.append(self._from_hash(result))
+
+        if not products:
+            raise NotFound("No products found for the given IDs.")
+
+        return products
+
     def delete(self, product_id):
         result = self.client.delete(self._format_key(product_id))
         if result == 0:
