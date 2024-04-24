@@ -178,13 +178,21 @@ class GatewayService(object):
         return Response(json.dumps({'id': id_}), mimetype='application/json')
 
     def _create_order(self, order_data):
-        # check order product ids are valid
-        valid_product_ids = {prod['id'] for prod in self.products_rpc.list()}
-        for item in order_data['order_details']:
-            if item['product_id'] not in valid_product_ids:
-                raise ProductNotFound(
-                    "Product Id {}".format(item['product_id'])
-                )
+        # Set to prevent duplicated ids and recode redis overwhelming
+        unique_order_details_id = {item['product_id'] for item in order_data['order_details']}
+        order_details = self.products_rpc.find_order_details_by_id(unique_order_details_id)
+
+        if len(order_details) != len(unique_order_details_id):
+            first_product_missing = None
+            for order_detail in order_details:
+                order_detail_id = order_detail['product_id']
+                if order_detail_id not in unique_order_details_id:
+                    first_product_missing = order_detail_id
+                    break
+
+            raise ProductNotFound(
+                f"Product Id {first_product_missing['product_id']}"
+            )
 
         # Call orders-service to create the order.
         # Dump the data through the schema to ensure the values are serialized
