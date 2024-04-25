@@ -36,16 +36,8 @@ def test_list(storage, products):
 
 def test_delete_product(storage, products):
     product_id = 'LZ129'
-    formatted_key = storage._format_key(product_id)
-
-    # Assume storage.client refers to the Redis client within the Storage class
-    with patch.object(storage.client, 'exists', return_value=True) as mock_exists, \
-            patch.object(storage.client, 'delete', return_value=1) as mock_delete:
-        exclusion_response = storage.delete(product_id)
-
-        assert exclusion_response > 0
-        mock_delete.assert_called_once_with(formatted_key)
-
+    exclusion_response = storage.delete(product_id)
+    assert exclusion_response > 0
 
 
 def test_delete_product_fails_not_found(storage, products):
