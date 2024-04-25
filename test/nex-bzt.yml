@@ -109,7 +109,20 @@ scenarios:
       then:
         - action: continue
 
-    # 5. Order List
+    # 5. Delete product
+    - url: /products/${product_id}
+      label: product-delete
+      method: DELETE
+      think-time: uniform(0s, 0s)
+      headers:
+        Content-Type: application/json
+      assert:
+        - contains:
+            - 200
+          subject: http-code
+
+
+    # 6. Order List
     - url: /orders
       label: orders-list
       method: GET
@@ -127,20 +140,6 @@ scenarios:
       then:
         - action: continue
 
-    # 6. Delete Product
-    - url: /products/${product_id}
-      label: product-delete
-      method: DELETE
-      think-time: uniform(0s, 0s)
-      headers:
-        Content-Type: application/json
-      assert:
-        - contains:
-            - 200
-            - 404
-          subject: http-code
-          not: false
-  
 reporting:
 - module: final-stats
   dump-xml: stats.xml
