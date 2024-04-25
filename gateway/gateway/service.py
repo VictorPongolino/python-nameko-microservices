@@ -105,8 +105,10 @@ class GatewayService(object):
         # raise``OrderNotFound``
         order = self.orders_rpc.get_order(order_id)
 
-        # Retrieve all products from the products service
-        product_map = {prod['id']: prod for prod in self.products_rpc.list()}
+        products_id = [item['product_id'] for item in order['order_details']]
+        products_data  = self.products_rpc.get_products_by_id(products_id)
+
+        product_map = {product['id']: product for product in products_data}
 
         # get the configured image root
         image_root = config['PRODUCT_IMAGE_ROOT']
